@@ -1,0 +1,52 @@
+<modification>
+	<id>Product Details: Weight + Unit Display</id>
+	<version>1.0</version>
+	<vqmver>2.1.6</vqmver>
+	<author>www.arhigosinc.com</author>		
+
+	<file name="catalog/controller/product/product.php">
+		<operation>
+			<search position="after">
+				<![CDATA[$this->data['text_wait'] = $this->language->get('text_wait');]]>
+			</search>
+			<add>
+				<![CDATA[$this->data['text_weight'] = $this->language->get('text_weight');]]>
+			</add>
+		</operation>
+		<operation>
+			<search position="after">
+				<![CDATA[$this->data['points'] = $product_info['points'];]]></search>
+			<add>
+				<![CDATA[$this->data['weight'] = $this->weight->format($product_info['weight'], $product_info['weight_class_id']);]]></add>
+		</operation>
+	</file>	
+
+	<file name="catalog/language/english/product/product.php">
+		<operation>
+			<search position="before">
+				<![CDATA[$_['text_search']]]></search>
+			<add>
+				<![CDATA[$_['text_weight']       		= 'Weight:';]]></add>
+		</operation>
+	</file>
+	
+	<file name="catalog/language/zh-CN/product/product.php">
+		<operation>
+			<search position="before">
+				<![CDATA[$_['text_search']]]></search>
+			<add>
+				<![CDATA[$_['text_weight']       		= '重量:		';]]></add>
+		</operation>
+	</file>	
+
+	<file name="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search position="replace">
+				<![CDATA[<?php echo $stock; ?></div>]]></search>
+			<add>
+				<![CDATA[<?php echo $stock; ?><?php if ($weight) { ?>
+				<br /><span><?php echo $text_weight; ?></span> <?php echo $weight; ?><?php } ?></div>]]></add>
+		</operation>
+	</file>		
+
+</modification>

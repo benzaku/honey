@@ -1,0 +1,342 @@
+<modification>
+	<id>embermonkey - OpenCart Responive Theme</id>
+	<version>1.5.x</version>
+	<vqmver>2.2.1</vqmver>
+	<author>embermonkey - Peter Stuart</author>
+	
+	<!-- Templates -->
+	<!-- Header -->
+	<file name="catalog/view/theme/*/template/common/header.tpl">
+		<operation>
+			<search position="before"><![CDATA[</head>]]></search>
+			<add><![CDATA[
+<script type="text/javascript">
+</script>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/stylesheet-mobile.css" />
+<style>
+.show, .show-table-cell {
+	display: none;
+}
+input[type='email'],input[type='tel'] {
+	background: none repeat scroll 0 0 #F8F8F8;
+	border: 1px solid #CCCCCC;
+	padding: 3px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+</style>
+<script type="text/javascript" src="catalog/view/javascript/mobile/mobile.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	/* Search */
+	$('.button-search-mobile').bind('click', function() {
+		url = $('base').attr('href') + 'index.php?route=product/search';
+				 
+		var search = $('#search_mobile input').attr('value');
+		
+		if (search) {
+			url += '&search=' + encodeURIComponent(search);
+		}
+		
+		location = url;
+	});
+});
+</script>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<div id="menu">]]></search>
+			<add><![CDATA[
+<div id="menu-mobile" style="display: none;">
+	<div>
+		<span class="select closed"></span>
+		<span>
+		<?php if(!isset($_GET['product/category']) && !isset($_GET['path'])){
+			echo "Categories";
+			}elseif(isset($_GET['product_id'])){
+			echo "Categories";
+			}else{
+			echo $title;
+			}
+			?>
+		</span>
+	</div>
+  	<ul class="closed">
+    	<?php foreach ($categories as $category) { ?>
+    		<li><a href="<?php echo $category['href']; ?>"><?php echo $category['name']; ?></a></li>
+    	<?php } ?>
+  	</ul>
+</div>
+<div id="links-mobile" style="display: none;">
+	<a href="<?php echo $home; ?>"><?php echo $text_home; ?></a>
+	<a href="<?php echo $account; ?>"><?php echo $text_account; ?></a>
+	<a href="<?php echo $shopping_cart; ?>"><?php echo $text_shopping_cart; ?></a>
+	<a href="<?php echo $checkout; ?>"><?php echo $text_checkout; ?></a>
+</div>
+  <div id="search_mobile" style="display: none;">
+<input type="text" name="search" placeholder="<?php echo $text_search; ?>" value="<?php echo $search; ?>" />
+	<div class="button-search-mobile m">Search</div>
+  </div>
+			]]></add>
+		</operation>
+	</file>
+		
+	<!-- Product Page -->
+	<file name="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<div class="image"><a href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>" class="colorbox"><img src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" id="image" /></a></div>]]></search>
+			<add><![CDATA[
+				<div class="image hide"><a href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>" class="colorbox"><img src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" id="image" /></a></div>
+				<div class="image show"><a href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>"><img src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" id="image-mobile" /></a></div>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<div class="image-additional">]]></search>
+			<add><![CDATA[
+<span class="scroll show">Scroll and tap to view images</span>
+<div class="image-additional">
+<div>
+<?php $i = 0; ?>			
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace" offset="2"><![CDATA[<?php foreach ($images as $image) { ?>]]></search>
+			<add><![CDATA[
+        <?php foreach ($images as $image) { ?>
+        <?php $i++; ?>
+		<a href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" class="colorbox hide" rel="colorbox"><img src="<?php echo $image['thumb']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" /></a>
+        <a href="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" class="image-replace show"><img src="<?php echo $image['thumb']; ?>" class="show" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" /></a>
+        <?php } ?>
+        </div>
+        <script type="text/javascript">
+		$(document).ready(function(){
+			$(".image-replace").on("click", function(e){
+				e.preventDefault();
+				var img = $(this).attr("href");
+				$("#image-mobile").attr("src", img);
+			});
+			$(".image a").on("click", function(e){
+				e.preventDefault();
+			});
+		});
+		</script>
+        <style>
+			.image-additional div {
+				width: <?php echo (74*$i)+(15*$i); ?>px;
+			}
+		</style>
+			]]></add>
+		</operation>
+	</file>
+	
+	<!-- Footer -->
+	<file name="catalog/view/theme/*/template/common/footer.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<div id="powered"><?php echo $powered; ?></div>]]></search>
+			  <add><![CDATA[
+<?php if($this->customer->isLogged()){ ?>
+<div style="padding: 6px 8px 0 8px; background: #DBE1E5">You are signed in as <?php echo strtolower($this->customer->getEmail()); ?>.<br/>Click here to <a href="index.php?route=account/logout">Logout</a></div>
+<?php } ?>
+<div id="powered"><?php echo $powered; ?> <span class="mobile-powered" style="display: none;">Responsive theme by <a href="http://www.embermonkey.com/" target="_blank">Peter Stuart</a></span></div>]]></add>
+		</operation>
+	</file>
+	
+	<!-- Modules -->
+	<file name="catalog/view/theme/*/template/module/carousel.tpl">
+		<operation>
+			<search position="after"><![CDATA[<div id="carousel<?php echo $module; ?>">]]></search>
+			<add><![CDATA[
+<span style="display: none;" class="scroll">Scroll and tap to view brands</span>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[//--></script>]]></search>
+			<add><![CDATA[
+<style>
+@media only screen and (max-width : 320px) { 
+.jcarousel-list {
+	width: <?php echo count($banners).'00px !important;'; ?>
+}
+}
+</style>
+			]]></add>
+		</operation>
+	</file>
+	
+	<!-- Checkout -->
+	<!-- Validate Registration -->
+	<file name="catalog/view/theme/*/template/checkout/checkout.tpl">
+		<operation>
+			<search position="replace"><![CDATA[data: $('#payment-address input[type=\'text\'], #payment-address input[type=\'password\'], #payment-address input[type=\'checkbox\']:checked, #payment-address input[type=\'radio\']:checked, #payment-address input[type=\'hidden\'], #payment-address select'),]]></search>
+			<add><![CDATA[data: $('#payment-address input[type=\'text\'], #payment-address input[type=\'password\'], #payment-address input[type=\'checkbox\']:checked, #payment-address input[type=\'radio\']:checked, #payment-address input[type=\'hidden\'], #payment-address select, #payment-address input[type=\'email\'],  #payment-address input[type=\'tel\']'),]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[data: $('#shipping-address input[type=\'text\'], #shipping-address input[type=\'password\'], #shipping-address input[type=\'checkbox\']:checked, #shipping-address input[type=\'radio\']:checked, #shipping-address select'),]]></search>
+			<add><![CDATA[data: $('#shipping-address input[type=\'text\'], #shipping-address input[type=\'password\'], #shipping-address input[type=\'checkbox\']:checked, #shipping-address input[type=\'radio\']:checked, #shipping-address select, #shipping-address input[type=\'email\'],  #shipping-address input[type=\'tel\']'),]]></add>
+		</operation>
+	</file>
+	
+	<!-- Login -->
+	<file name="catalog/view/theme/*/template/checkout/login.tpl">
+		<operation>
+			<search position="after"><![CDATA[<h2><?php echo $text_new_customer; ?></h2>]]></search>
+			<add><![CDATA[
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace" offset="2"><![CDATA[<div id="login" class="right">]]></search>
+			<add><![CDATA[
+</div>
+<div class="right" id="login">
+<h2><?php echo $text_returning_customer; ?></h2>
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="after" index="2"><![CDATA[</div>]]></search>
+			<add><![CDATA[
+</div>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="email" value="" />]]></search>
+			<add><![CDATA[<input type="email" name="email" value="" />]]></add>
+		</operation>
+	</file>
+	
+	<!-- Register -->
+	<file name="catalog/view/theme/*/template/checkout/register.tpl">
+		<operation>
+			<search position="after"><![CDATA[<h2><?php echo $text_your_details; ?></h2>]]></search>
+			<add><![CDATA[
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<h2><?php echo $text_your_password; ?></h2>]]></search>
+			<add><![CDATA[
+</div>
+<h2><?php echo $text_your_password; ?></h2>
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace" index="1" offset="1"><![CDATA[<div class="right">]]></search>
+			<add><![CDATA[
+</div>
+<div class="right">
+<h2><?php echo $text_your_address; ?></h2>
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<div style="clear: both; padding-top: 15px; border-top: 1px solid #EEEEEE;">]]></search>
+			<add><![CDATA[
+</div>
+<div style="clear: both; padding-top: 15px;">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="email" value="" class="large-field" />]]></search>
+			<add><![CDATA[<input type="email" name="email" value="" class="large-field" />]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="telephone" value="" class="large-field" />]]></search>
+			<add><![CDATA[<input type="tel" name="telephone" value="" class="large-field" />]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="fax" value="" class="large-field" />]]></search>
+			<add><![CDATA[<input type="tel" name="fax" value="" class="large-field" />]]></add>
+		</operation>
+	</file>
+	
+	<!-- Guest -->
+	<file name="catalog/view/theme/*/template/checkout/guest.tpl">
+		<operation>
+			<search position="after"><![CDATA[<h2><?php echo $text_your_details; ?></h2>]]></search>
+			<add><![CDATA[
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace" index="1" offset="1"><![CDATA[<div class="right">]]></search>
+			<add><![CDATA[
+</div>
+<div class="right">
+<h2><?php echo $text_your_address; ?></h2>
+<div class="content">
+			]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<div class="buttons">]]></search>
+			<add><![CDATA[
+</div>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="email" value="<?php echo $email; ?>" class="large-field" />]]></search>
+			<add><![CDATA[<input type="email" name="email" value="<?php echo $email; ?>" class="large-field" />]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="telephone" value="<?php echo $telephone; ?>" class="large-field" />]]></search>
+			<add><![CDATA[<input type="tel" name="telephone" value="<?php echo $telephone; ?>" class="large-field" />]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<input type="text" name="fax" value="<?php echo $fax; ?>" class="large-field" />]]></search>
+			<add><![CDATA[<input type="tel" name="fax" value="<?php echo $fax; ?>" class="large-field" />]]></add>
+		</operation>
+	</file>
+	
+	
+	<!-- Payment -->
+	<file name="catalog/language/english/checkout/checkout.php">
+		<operation>
+			<search position="replace"><![CDATA[$_['text_agree']                     = 'I have read and agree to the <a class="colorbox" href="%s" alt="%s"><b>%s</b></a>';]]></search>
+			<add><![CDATA[
+$_['text_agree']                     = '<div class="hide">I have read and agree to the <a class="colorbox" href="%s" alt="%s"><b>%s</b></a></div><div style="text-align: left;" class="show">By continuing you agree to our terms. Please view our desktop website for all of the information. Check the box to continue.</div>';
+			]]></add>
+		</operation>
+	</file>
+	
+	<!-- Confirm -->
+	<file name="catalog/view/theme/*/template/checkout/confirm.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<td colspan="4" class="price"><b><?php echo $total['title']; ?>:</b></td>]]></search>
+			<add><![CDATA[
+<td colspan="4" class="price hide"><b><?php echo $total['title']; ?>:</b></td>
+<td colspan="3" class="price show-table-cell"><b><?php echo $total['title']; ?>:</b></td>
+]]></add>
+		</operation>
+	</file>	
+	
+	<!-- Account -->
+	<!-- Order History -->
+	<file name="catalog/view/theme/*/template/account/order_info.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<td class="left"><?php echo $column_model; ?></td>]]></search>
+			<add><![CDATA[<td class="left hide"><?php echo $column_model; ?></td>]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<td class="left"><?php echo $product['model']; ?></td>]]></search>
+			<add><![CDATA[<td class="left hide"><?php echo $product['model']; ?></td>]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<td style="width: 1px;"></td>]]></search>
+			<add><![CDATA[<td class="hide" style="width: 1px;"></td>]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<td class="right"><a href="<?php echo $product['return']; ?>"><img src="catalog/view/theme/default/image/return.png" alt="<?php echo $button_return; ?>" title="<?php echo $button_return; ?>" /></a></td>]]></search>
+			<add><![CDATA[<td class="right hide"><a href="<?php echo $product['return']; ?>"><img src="catalog/view/theme/default/image/return.png" alt="<?php echo $button_return; ?>" title="<?php echo $button_return; ?>" /></a></td>]]></add>
+		</operation>
+		<operation>
+			<search position="replace" index="1"><![CDATA[<td></td>]]></search>
+			<add><![CDATA[<td class="hide"></td>]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[<td colspan="3"></td>]]></search>
+			<add><![CDATA[<td class="hide" colspan="3"></td><td class="show-table-cell" colspan="2"></td>]]></add>
+		</operation>
+	</file>	
+</modification>

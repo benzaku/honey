@@ -1,0 +1,22 @@
+This module was written on OpenCart v.1.5.5.1
+
+This module will add and change, on full and empty, the image cart, in mini-cart module in header.
+
+If you do not like this add-on, you can simply delete:
+- file catalog/view/javascript/f_i_common.js
+- file "f_cart_image.xml" from a folder vqmod/xml/ and clean a folder vqmod/vqcache/
+
+Affected files:
+catalog/view/theme/ALL THEMES/template/common/header.tpl
+catalog/view/theme/ALL THEMES/template/module/cart.tpl
+catalog/view/theme/ALL THEMES/template/product/product.tpl
+
+New file:
+catalog/view/javascript/f_i_common.js
+
+No one file will not be overwritten.
+
+All you need to do - is to throw this folders in a root of your site
+
+If you have any questions or suggestions for this add-on, you can contact me by email LexX2605@yandex.ru or on the forum http://opencartforum.ru/user/13556-fabrikator/
+Thank you for using this extension

@@ -1,0 +1,389 @@
+<modification>
+
+	<id>vQmod - EMS Tracking Mod</id>
+	<version>1.0.1</version>
+	<vqmver>1.0.8</vqmver>
+	<author>FL</author>
+
+<file name="catalog/controller/account/invoice.php">
+        <operation>
+            <search position="after"><![CDATA[
+         	   	$this->data['column_status'] = $this->language->get('column_status');
+            ]]></search>
+            <add><![CDATA[
+   	     		$this->data['column_ems_track'] = $this->language->get('column_ems_track');
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+         	   	$results = $this->model_account_order->getOrderHistories($this->request->get['order_id']);
+            ]]></search>
+            <add><![CDATA[
+			if ($order_info['shipping_country'] === "United States") {
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+         	   'comment'    => nl2br($result['comment'])	
+            ]]></search>
+            <add><![CDATA[
+   	        	   	'ems_track'  => $result['trackcode'],
+    		    	'trackcode'  => $result['trackcode'] = 'http://17track.net/IndexEn.html',
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+         	  $this->data['shipping_address'] = str_replace(array("\r\n", "\r", "\n"), '<br />', preg_replace(array("/\s\s+/", "/\r\r+/", "/\n\n+/"), '<br />', trim(str_replace($find, $replace, $format))));
+            ]]></search>
+            <add><![CDATA[
+   	     	  $this->data['shipping_country'] = $order_info['shipping_country'];
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+         	   $this->data['continue'] = HTTPS_SERVER . 'index.php?route=account/history';	
+            ]]></search>
+            <add><![CDATA[
+   	     	   }
+			if ($order_info['shipping_country'] !== "United States") {
+				foreach ($results as $result) {
+					$this->data['historys'][] = array(
+						'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
+						'status'     => $result['status'],
+						'ems_track'  => $result['trackcode'],
+						'trackcode'	 => $result['trackcode'] = 'http://17track.net/IndexEn.html',
+						'comment'    => nl2br($result['comment']),
+						'notify'     => $result['notify'] ? $this->language->get('text_yes') : $this->language->get('text_no')
+					);
+				}
+			}
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="catalog/language/english/account/invoice.php">
+        <operation>
+            <search position="after"><![CDATA[
+         	   $_['column_status']         = 'Status';	
+            ]]></search>
+            <add><![CDATA[
+$_['column_ems_track']    = 'Tracking No.';
+           ]]></add>
+        </operation>
+	</file>
+
+
+<file name="catalog/model/account/order.php">
+        <operation>
+            <search position="replace" offset="1"><![CDATA[
+         	$query = $this->db->query("SELECT date_added, os.name AS status, oh.comment, oh.notify FROM " . DB_PREFIX . "daigou_oc_order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND oh.notify = '1' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added");   	
+            ]]></search>
+            <add><![CDATA[
+		$query = $this->db->query("SELECT date_added, os.name AS status, oh.comment, oh.trackcode, oh.notify FROM " . DB_PREFIX . "daigou_oc_order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND oh.notify = '1' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added DESC");
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="catalog/view/theme/default/template/account/invoice.tpl">
+        <operation>
+            <search position="after" offset="2"><![CDATA[
+         	<b style="margin-bottom: 2px; display: block;"><?php echo $text_order_history; ?></b>
+            ]]></search>
+            <add><![CDATA[
+		<!--  ///////////// EMS Tracking /////////////
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+         	<?php foreach ($historys as $history) { ?>
+            ]]></search>
+            <add><![CDATA[
+		 -->
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="replace" offset="6"><![CDATA[
+        <?php foreach ($historys as $history) { ?>
+        <tr>
+          <td valign="top"><?php echo $history['date_added']; ?></td>
+          <td valign="top"><?php echo $history['status']; ?></td>
+          <td valign="top"><?php echo $history['comment']; ?></td>
+        </tr>
+        <?php } ?>
+            ]]></search>
+            <add><![CDATA[
+		<?php foreach ($historys as $history) { ?>
+        <tr>
+        <th align="left" width="160"><?php echo $column_date_added; ?></th>&#58;
+          <td valign="top"><?php echo $history['date_added']; ?></td>
+          </tr><br/>
+          <tr>
+          <th align="left"><?php echo $column_status; ?></th>&#58;
+          <td valign="top"><?php echo $history['status']; ?></b></td>
+          </tr><br/>
+         <?php if($history['ems_track']){ ?>
+          <tr>
+          <th align="left"><?php echo $column_ems_track; ?>&nbsp;&nbsp;</th>&#58;
+          <td valign="top"><a href='<?php echo $history['trackcode']; ?>' target="_blank"><b onmouseover="this.style.color='red'" onmouseout="this.style.color=''"><?php echo $history['ems_track']; ?></b></a>&nbsp;&nbsp;<?php if ($shipping_country=="United States") { ?><img src="image/ems-small-logo.jpg" hspace="3" align="absmiddle" /><?php } else { ?><img src="image/ems-small-logo.jpg" hspace="3" align="absmiddle" /><?php } ?></td>
+          </tr><?php } ?><br/>
+          <tr>
+          <th valign="top" align="left"><?php echo $column_comment; ?></th>&#58;
+          <td valign="top"><?php echo $history['comment']; ?></td><br/>
+        </tr>
+        <tr><td colspan=2><hr /></td></tr>
+        <?php } ?>
+		<!--  ///////////// EMS Tracking ///////////// -->	
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="admin/controller/sale/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+         	$this->data['column_add_product'] = $this->language->get('column_add_product');
+            ]]></search>
+            <add><![CDATA[
+	$this->data['column_ems_track'] = $this->language->get('column_ems_track');
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+         	$this->data['entry_tax'] = $this->language->get('entry_tax');
+            ]]></search>
+            <add><![CDATA[
+	$this->data['entry_ems_track'] = $this->language->get('entry_ems_track');
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+         	$results = $this->model_sale_order->getOrderHistory($this->request->get['order_id']);
+            ]]></search>
+            <add><![CDATA[
+	if ($order_info['shipping_country'] === "United States") {		
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after" offset="2"><![CDATA[
+         	$this->data['histories'][] = array(
+            ]]></search>
+            <add><![CDATA[
+	                'ems_track'  => $result['trackcode'],
+    	            'trackcode'	 => $result['trackcode'] = 'http://17track.net/IndexEn.html',
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+         	$this->data['downloads'] = array();
+            ]]></search>
+            <add><![CDATA[
+	        }
+	    	if ($order_info['shipping_country'] !== "United States") {
+			foreach ($results as $result) {
+				$this->data['histories'][] = array(
+					'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
+					'status'     => $result['status'],
+					'ems_track'  => $result['trackcode'],
+					'trackcode'	 => $result['trackcode'] = 'http://17track.net/IndexEn.html',
+					'comment'    => nl2br($result['comment']),
+					'notify'     => $result['notify'] ? $this->language->get('text_yes') : $this->language->get('text_no')
+					);
+				}
+			}
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+         	if (isset($this->request->post['comment'])) {
+            ]]></search>
+            <add><![CDATA[
+	        if (isset($this->request->post['trackcode'])) {
+    			$json['trackcode'] = $this->request->post['trackcode'];
+    		} else {
+    			$json['trackcode'] = '';
+    		}
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="admin/language/english/mail/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+         	$_['text_order_status'] = 'Your order has been updated to the following status:';
+            ]]></search>
+            <add><![CDATA[
+$_['text_ems_track']    = 'Please Track Your Order by Clicking the Link Below:';
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="admin/language/english/sale/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+         	$_['column_add_product']    = 'Add Product(s)';
+            ]]></search>
+            <add><![CDATA[
+$_['column_ems_track']      = '<u>Tracking No.</u>';
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+         	$_['entry_tax']   			= 'Tax:';
+            ]]></search>
+            <add><![CDATA[
+$_['entry_ems_track']   	= 'Tracking Number:';
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="admin/model/sale/order.php">
+        <operation>
+            <search position="replace"><![CDATA[
+         	$this->db->query("INSERT INTO " . DB_PREFIX . "daigou_oc_order_history SET order_id = '" . (int)$order_id . "', order_status_id = '" . (int)$data['order_status_id'] . "', notify = '" . (isset($data['notify']) ? (int)$data['notify'] : 0) . "', comment = '" . $this->db->escape(strip_tags($data['comment'])) . "', date_added = NOW()");
+            ]]></search>
+            <add><![CDATA[
+		$this->db->query("INSERT INTO " . DB_PREFIX . "daigou_oc_order_history SET order_id = '" . (int)$order_id . "', order_status_id = '" . (int)$data['order_status_id'] . "', notify = '" . (isset($data['notify']) ? (int)$data['notify'] : 0) . "', trackcode = '" . $this->db->escape(strip_tags($data['trackcode'])). "', comment = '" . $this->db->escape(strip_tags($data['comment'])) . "', date_added = NOW()");
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="replace"><![CDATA[
+         	$query = $this->db->query("SELECT oh.date_added, os.name AS status, oh.comment, oh.notify FROM " . DB_PREFIX . "daigou_oc_order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added");
+            ]]></search>
+            <add><![CDATA[
+		$query = $this->db->query("SELECT oh.date_added, os.name AS status, oh.trackcode, oh.comment, oh.notify FROM " . DB_PREFIX . "daigou_oc_order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added");
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+         	$message .= html_entity_decode($order_query->row['store_url'] . 'index.php?route=account/invoice&order_id=' . $order_id, ENT_QUOTES, 'UTF-8') . "\n\n";
+            ]]></search>
+            <add><![CDATA[
+			if ($data['trackcode']) {
+					$message .= $language->get('text_ems_track') . "\n";
+					
+					if ($order_query->row['shipping_country'] === "United States") {
+						$message .= html_entity_decode('http://17track.net/IndexEn.html' . ' ' . $language->get('With Tracking No.:') . ' ' . $data['trackcode']) . "\n\n";
+					}
+					
+					if ($order_query->row['shipping_country'] !== "United States") {
+						$message .= html_entity_decode('http://17track.net/IndexEn.html' . ' ' . $language->get('With Tracking No.:') . ' ' . $data['trackcode']) . "\n\n";
+					}
+				}
+           ]]></add>
+        </operation>
+	</file>
+
+<file name="admin/view/template/sale/order_form.tpl">
+        <operation>
+            <search position="before"><![CDATA[
+            <?php if ($history['comment']) { ?>		
+            ]]></search>
+            <add><![CDATA[
+		 <?php if ($history['ems_track']) { ?>
+             	<thead>
+             	 <tr>
+             	<td class="left" colspan="3"><b><?php echo $column_ems_track; ?></b></td>
+           	 </tr>
+         	 </thead>
+          <tbody>
+            <tr>
+              <td class="left" colspan="3"><a href='<?php echo $history['trackcode']; ?>' target="_blank"><b onmouseover="this.style.color='red'" onmouseout="this.style.color=''"><?php echo $history['ems_track']; ?></b></a>&nbsp;&nbsp;<?php if ($shipping_country==="United States") { ?><img src="../image/ems-small-logo.jpg" hspace="3" align="absmiddle" /><?php } else { ?><img src="../image/ems-small-logo.jpg" hspace="3" align="absmiddle" /><?php } ?></td>
+            </tr>
+          </tbody>
+          <?php } ?>
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after" offset="1"><![CDATA[
+            <td id="order_status"><?php echo $order_status; ?></td>
+            ]]></search>
+            <add><![CDATA[
+ 	      <?php $i=0;$length=count($histories)-1;foreach ($histories as $history) { ?>
+            	<?php if($i == $length && $history['ems_track'] ){ ?>
+	          <tr>
+                  <td><?php echo $entry_ems_track; ?></td>
+                  <td><a href='<?php echo $history['trackcode']; ?>' target="_blank"><b onmouseover="this.style.color='red'" onmouseout="this.style.color=''"><?php echo $history['ems_track']; ?></b></a>&nbsp;&nbsp;<?php if ($shipping_country==="United States") { ?><img src="../image/ems-small-logo.jpg" hspace="3" align="absmiddle" /><?php } else { ?><img src="../image/ems-small-logo.jpg" hspace="3" align="absmiddle" /><?php } ?></td>
+                </tr>
+	      <?php } ?><?php $i++; } ?>	
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after" offset="2"><![CDATA[
+             <td><input type="checkbox" name="append" value="1" checked="checked" /></td>
+            ]]></search>
+            <add><![CDATA[
+          <tr>
+            <td><?php echo $entry_ems_track; ?></td>
+            <td><input name="trackcode" />
+            </td>
+          </tr>
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="before"><![CDATA[
+		if (data.comment) {
+            ]]></search>
+            <add><![CDATA[
+				if (data.trackcode) {
+					html += '    <thead>';
+					html += '      <tr>';
+					html += '        <td class="left" colspan="3"><b><?php echo $column_ems_track; ?></b></td>';
+					html += '      </tr>';
+					html += '    </thead>';
+					html += '    <tbody>';
+					html += '      <tr>';
+					html += '        <td class="left" colspan="3">' + data.trackcode + '</td>';
+					html += '      </tr>';
+					html += '    </tbody>';
+				}
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[
+		$('#tab_history .form').before('<div class="success">' + data.success + '</div>');
+            ]]></search>
+            <add><![CDATA[
+         	$('input[name=\'trackcode\']').val('');
+           ]]></add>
+        </operation>
+
+        <operation>
+            <search position="replace"><![CDATA[
+	     data: 'order_status_id=' + encodeURIComponent($('select[name=\'order_status_id\']').val()) + '&notify=' + encodeURIComponent($('input[name=\'notify\']').attr('checked') ? 1 : 0) + '&append=' + encodeURIComponent($('input[name=\'append\']').attr('checked') ? 1 : 0) + '&comment=' + encodeURIComponent($('textarea[name=\'comment\']').val()),
+            ]]></search>
+            <add><![CDATA[
+	data: 'order_status_id=' + encodeURIComponent($('select[name=\'order_status_id\']').val()) + '&notify=' + encodeURIComponent($('input[name=\'notify\']').attr('checked') ? 1 : 0) + '&append=' + encodeURIComponent($('input[name=\'append\']').attr('checked') ? 1 : 0)  + '&trackcode=' + encodeURIComponent($('input[name=\'trackcode\']').val()) + '&comment=' + encodeURIComponent($('textarea[name=\'comment\']').val()),
+           ]]></add>
+        </operation>
+	</file>
+
+</modification>
+
+<!--
+<modification>	- This is the highest level of the file and there can only be one
+<id>			- This is the name of the mod. Format: Free form text. (Informational)
+<version>		- This is the version of the mod. Format: Number and Decimal (1.0.0) (Informational)
+<author>		- This is the author of the mod. Format: Free form text (Informational)
+<file>			- This is the name of the file to modify. Requires attribute "name" as relative filename (catalog/controller/product/product.php). There can be multiple
+<operation>		- This is the wrapper of the actual operation occuring. There can be multiple operations to the same file.
+<search>		- This is the first required step of the operation. Uses an optional attribute "position" set to before|after|replace. replace is default. One per operation. Use CDATA tags to wrap code.
+<add>			- This is the second required step of the operation. Uses an optional attribute "trim" set to true|false to trim away whitespace and linebreaks. false is default. One per operation. Location of added data depends on the position of the <search> command. Use CDATA tags to wrap code.
+<![CDATA[  ]]>	- These are called CDATA tags and they are used by xml to specify that the data between should not be evaluated.
+-->

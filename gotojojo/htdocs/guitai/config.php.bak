@@ -1,0 +1,30 @@
+<?php
+// HTTP
+define('HTTP_SERVER', 'http://xuhaiyang.de/opencart/upload/admin/');
+define('HTTP_CATALOG', 'http://xuhaiyang.de/opencart/upload/');
+
+// HTTPS
+define('HTTPS_SERVER', 'http://xuhaiyang.de/opencart/upload/admin/');
+define('HTTPS_CATALOG', 'http://xuhaiyang.de/opencart/upload/');
+
+// DIR
+define('DIR_APPLICATION', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/admin/');
+define('DIR_SYSTEM', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/system/');
+define('DIR_DATABASE', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/system/database/');
+define('DIR_LANGUAGE', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/admin/language/');
+define('DIR_TEMPLATE', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/admin/view/template/');
+define('DIR_CONFIG', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/system/config/');
+define('DIR_IMAGE', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/image/');
+define('DIR_CACHE', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/system/cache/');
+define('DIR_DOWNLOAD', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/download/');
+define('DIR_LOGS', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/system/logs/');
+define('DIR_CATALOG', '/customers/0/6/6/xuhaiyang.de/httpd.www/opencart/upload/catalog/');
+
+// DB
+define('DB_DRIVER', 'mysql');
+define('DB_HOSTNAME', 'xuhaiyang.de.mysql');
+define('DB_USERNAME', 'xuhaiyang_de');
+define('DB_PASSWORD', 'YceDP8zh');
+define('DB_DATABASE', 'xuhaiyang_de');
+define('DB_PREFIX', 'daigou_oc_');
+?>

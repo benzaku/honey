@@ -1,0 +1,55 @@
+<!-- Created using vQmod XML Generator by UKSB - http://uksb.github.com/vqgen/ //-->
+<modification>
+	<id><![CDATA[Show Retail and Discount Pricing on Products]]></id>
+	<version><![CDATA[1.0]]></version>
+	<vqmver><![CDATA[2.3.2]]></vqmver>
+	<author><![CDATA[Dracaris]]></author>
+	<file name="catalog/controller/product/product.php">
+		<operation info="Get the retail price">
+			<search position="after" offset="1" index="1" error="log"><![CDATA[$this->data['points'] = $product_info['points'];]]></search>
+			<add><![CDATA[$this->data['display_retail_price'] = $this->currency->format($product_info['display_retail_price']);]]></add>
+		</operation>
+		<operation>
+			<search position="after" offset="1" index="3" error="log"><![CDATA[$this->data['products']]]></search>
+			<add><![CDATA['display_retail_price'    => $display_retail_price,]]></add>
+		</operation>
+		<operation>
+			<search position="after" offset="1" index="1" error="log"><![CDATA[$this->language->get('text_price');]]></search>
+			<add><![CDATA[$this->data['text_retail_price'] = $this->language->get('text_retail_price');
+$this->data['text_your_cost'] = $this->language->get('text_your_cost');]]></add>
+		</operation>
+	</file>
+	<file name="catalog/model/catalog/product.php">
+		<operation info="Retail Price">
+			<search position="after" offset="1" index="1" error="log"><![CDATA['manufacturer'     => $query->row['manufacturer'],]]></search>
+			<add><![CDATA['display_retail_price'   => $query->row['price'],]]></add>
+		</operation>
+	</file>
+	<file name="catalog/language/english/product/product.php">
+		<operation info="Set Text for Product Detail Page ">
+			<search position="after" offset="1" index="1" error="log"><![CDATA[$_['text_price']        = 'Price:';]]></search>
+			<add><![CDATA[$_['text_retail_price'] = 'Retail Price :';
+$_['text_your_cost'] = 'Your Cost :';]]></add>
+		</operation>
+	</file>
+	<file name="catalog/language/zh-CN/product/product.php">
+		<operation info="Set Text for Product Detail Page ">
+			<search position="after" offset="1" index="1" error="log"><![CDATA[$_['text_price']        = '价格：';]]></search>
+			<add><![CDATA[$_['text_retail_price'] = '建议零售价 :';
+$_['text_your_cost'] = '您的价格 :';]]></add>
+		</operation>
+	</file>  
+  
+	<file name="catalog/view/theme/default/template/product/product.tpl">
+		<operation info="Retail and Discount Prices">
+			<search position="before" offset="1" index="1" error="log"><![CDATA[<?php if (!$special) { ?>]]></search>
+			<add><![CDATA[<?php if ($price != $display_retail_price) { ?>
+      <span class="price"><?php echo $text_retail_price; ?></span><span class="price-old" style="font-size: 20px"><?php echo $display_retail_price; ?></span><span class="price"><?php echo $text_your_cost; ?></span>
+      <?php }else{?>]]></add>
+		</operation>
+		<operation>
+			<search position="before" index="1" error="log"><![CDATA[<?php if (!$special) { ?>]]></search>
+			<add><![CDATA[<?php } ?>]]></add>
+		</operation>
+	</file>
+</modification>

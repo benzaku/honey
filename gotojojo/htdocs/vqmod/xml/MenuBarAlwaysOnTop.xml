@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <id>Menu bar - always on top</id>
+    <version>1</version>
+    <vqmver>2.3.2</vqmver>
+    <author>Tymoteusz Lesniak (tymoteusz.lesniak@gmail.com)</author>
+    <file name="catalog/view/theme/default/template/common/footer.tpl">
+        <operation>
+            <search position="before"><![CDATA[
+               </body></html>
+                ]]></search>
+            <add><![CDATA[
+                <script type="text/javascript">
+                    var startPosition = 101;
+                    var contentMargin =  28;
+
+                    $(window).scroll(function() {
+                        if($(window).scrollTop() > startPosition) {
+                            width = $('#container #menu').width();
+                            height = $('#container #menu').height();
+                            $('#container #menu').css('position', 'fixed').css('top',0).css('width',width).css('border-radius','0px').css('z-index','999');
+                            $('#container #content').css('margin-top', height+contentMargin);
+                        } else {
+                            $('#container #menu').removeAttr('style');
+                            $('#container #content').removeAttr('style');
+                        }
+                    }); 
+                </script>
+            ]]></add>
+        </operation>
+    </file>
+</modification>

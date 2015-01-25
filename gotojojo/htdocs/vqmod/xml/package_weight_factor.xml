@@ -1,0 +1,18 @@
+<modification>
+	<id>Packaging Weight Factor</id>
+	<version>1.0</version>
+	<vqmver>2.1.6</vqmver>
+	<author>www.xuhaiyang.de</author>		
+
+	<file name="system/library/cart.php">
+		<operation>
+			<search position="before">
+				<![CDATA[return $weight;]]>
+			</search>
+			<add>
+				<![CDATA[$weight = $weight * 1.2;]]>
+			</add>
+		</operation>
+	</file>	
+
+</modification>

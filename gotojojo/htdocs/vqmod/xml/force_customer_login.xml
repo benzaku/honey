@@ -1,0 +1,43 @@
+<modification>
+
+	<id>Force Customer Login</id>
+	<version>152.1</version>
+	<vqmver>2.1.5</vqmver>
+	<author>Qphoria</author>
+
+	<file name="catalog/controller/common/header.php">
+		<operation>
+			<search position="after"><![CDATA[
+			function index()
+			]]></search>
+			<add trim="true"><![CDATA[
+			//Q: Force Customer Login			
+			$match = false;
+			if (!empty($this->request->get['route'])) {
+				
+				$skip = array(
+					'payment',
+					'feed',
+					'forgotten',
+					'login',
+					'register',
+				);
+			
+				foreach ($skip as $s) {
+					if (strpos($this->request->get['route'], $s) !== false) {
+						$match = true;
+						break;
+					}
+				}
+			}
+			
+			if (!$match) {
+				if (!$this->customer->isLogged()) {
+					$this->redirect($this->url->link('account/login', 'SSL'));
+				}
+			}
+			]]></add>
+		</operation>
+	</file>
+
+</modification>

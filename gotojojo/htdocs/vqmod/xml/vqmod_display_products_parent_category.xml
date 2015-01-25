@@ -1,0 +1,17 @@
+<modification>
+	<id>Display products from all subcategory on parent category page</id>
+	<version>1.0</version>
+	<vqmver>2.4.1</vqmver>
+	<author>TruongPhiXuLanh@gmail.com</author>
+	<file name="catalog/controller/product/category.php">		
+		<operation>
+			<search position="after"><![CDATA[
+				'filter_category_id' => $category_id,
+			]]></search>
+			<add><![CDATA[
+				'filter_sub_category' => true,
+			]]></add>
+		</operation>
+	</file>		
+	</file>		
+</modification>

@@ -1,0 +1,41 @@
+			
+<modification>
+	<id><![CDATA[User comments in confirmation email]]></id>
+	<version><![CDATA[1.0.1]]></version>
+	<vqmver><![CDATA[2.1.0]]></vqmver>
+	<author><![CDATA[Fabius - http://opencartit.altervista.org]]></author>
+	
+	<file name="catalog/model/checkout/order.php">
+		<operation>
+			<search position="before" index="1"><![CDATA[if ($comment && $notify) {]]></search>
+			<add><![CDATA[if ($order_info['comment']) {
+                $template->data['user_comment'] = nl2br($order_info['comment']);
+            }]]></add>
+		</operation>
+				<operation>
+			<search position="after"><![CDATA[$template->data['text_footer']]]></search>
+			<add><![CDATA[$template->data['text_user_comment'] = $language->get('text_new_comment');]]></add>
+		</operation>		
+	</file>
+	<file name="catalog/view/theme/*/template/mail/order.tpl">
+		<operation>
+			<search position="before"><![CDATA[$text_footer]]></search>
+			<add><![CDATA[
+  <?php if (isset($user_comment)) { ?>
+  <table style="border-collapse: collapse; width: 100%; border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; margin-bottom: 20px;">
+    <thead>
+      <tr>
+        <td style="font-size: 12px; border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; background-color: #EFEFEF; font-weight: bold; text-align: left; padding: 7px; color: #222222;"><?php echo $text_user_comment; ?></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-size: 12px;	border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; text-align: left; padding: 7px;"><?php echo $user_comment; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  <?php } ?>
+			]]></add>
+		</operation>		
+	</file>
+</modification>
