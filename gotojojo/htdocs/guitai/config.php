@@ -1,11 +1,11 @@
 <?php
 // HTTP
-define('HTTP_SERVER', 'http://gotojojo.com/guitai/');
-define('HTTP_CATALOG', 'http://gotojojo.com/');
+define('HTTP_SERVER', 'http://118.193.146.149/~gotojojo/guitai/');
+define('HTTP_CATALOG', 'http://118.193.146.149/~gotojojo/');
 
 // HTTPS
-define('HTTPS_SERVER', 'http://gotojojo.com/guitai/');
-define('HTTPS_CATALOG', 'http://gotojojo.com/');
+define('HTTPS_SERVER', 'http://118.193.146.149/~gotojojo/guitai/');
+define('HTTPS_CATALOG', 'http://118.193.146.149/~gotojojo/');
 
 // DIR
 define('DIR_APPLICATION', '../guitai/');
@@ -22,9 +22,9 @@ define('DIR_CATALOG', '../catalog/');
 
 // DB
 define('DB_DRIVER', 'mysql');
-define('DB_HOSTNAME', 'sql307.er-webs.com');
-define('DB_USERNAME', 'erweb_15463155');
+define('DB_HOSTNAME', 'localhost');
+define('DB_USERNAME', 'gotojojo');
 define('DB_PASSWORD', 'dis7Axis');
-define('DB_DATABASE', 'erweb_15463155_johae_daigou');
+define('DB_DATABASE', 'gotojojo_db');
 define('DB_PREFIX', 'daigou_oc_');
 ?>
