@@ -1,11 +1,11 @@
 <?php
 // HTTP
-define('HTTP_SERVER', 'http://118.193.146.149/~gotojojo/guitai/');
-define('HTTP_CATALOG', 'http://118.193.146.149/~gotojojo/');
+define('HTTP_SERVER', 'http://www.gotojojo.com/guitai/');
+define('HTTP_CATALOG', 'http://www.gotojojo.com/');
 
 // HTTPS
-define('HTTPS_SERVER', 'http://118.193.146.149/~gotojojo/guitai/');
-define('HTTPS_CATALOG', 'http://118.193.146.149/~gotojojo/');
+define('HTTPS_SERVER', 'http://www.gotojojo.com/guitai/');
+define('HTTPS_CATALOG', 'http://www.gotojojo.com/');
 
 // DIR
 define('DIR_APPLICATION', '../guitai/');
